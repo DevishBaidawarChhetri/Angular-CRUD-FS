@@ -23,15 +23,23 @@ export class PostsService {
   }
 
   // Add Post
-  addPost(post: Post) {
+  addPost(post: Post, image: File) {
+    const postData = new FormData();
+    postData.append('title', post.title);
+    postData.append('content', post.content);
+    postData.append('image', image, post.title);
     this.http
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         this.baseUrl + '/api/posts',
-        post
+        postData
       )
       .subscribe((response) => {
-        const id = response.postId;
-        post._id = id;
+        const post: Post = {
+          _id: response.post._id,
+          title: response.post.title,
+          content: response.post.content,
+          imagePath: response.post.imagePath
+        }
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
       });
@@ -50,7 +58,12 @@ export class PostsService {
 
   // Get individual post
   getPost(id: string) {
-    return this.http.get<{ _id: string, title: string, content: string }>(this.baseUrl + '/api/posts/' + id);
+    return this.http.get<{
+      _id: string,
+      title: string,
+      content: string,
+      imagePath: string
+    }>(this.baseUrl + '/api/posts/' + id);
   }
 
   // Update Post
@@ -62,6 +75,7 @@ export class PostsService {
         _id: id,
         title: formValue.title,
         content: formValue.content,
+        imagePath: formValue.image
       }
       updatedPosts[oldPostsIndex] = post;
       this.posts = updatedPosts;

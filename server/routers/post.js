@@ -1,7 +1,32 @@
 const express = require("express");
-const router = express.Router();
+var multer = require("multer");
 
+const router = express.Router();
 const PostProvider = require("../models/postSchema");
+
+// File Mime type
+const MIME_TYPE_MAP = {
+  "image/png": "png",
+  "image/jpeg": "jpeg",
+  "image/jpg": "jpg",
+};
+
+// Storage for Image Upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE_MAP[file.mimetype];
+    let error = new Error("Invalid mime type");
+    if (isValid) {
+      error = null;
+    }
+    cb(error, "../server/images");
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("_");
+    const ext = MIME_TYPE_MAP[file.mimetype];
+    cb(null, name + "_" + Date.now() + "." + ext);
+  },
+});
 
 /**
  * @route POST /api/posts
@@ -9,25 +34,36 @@ const PostProvider = require("../models/postSchema");
  * @access Public (For Now)
  */
 
-router.post("/api/posts", async (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(422).json({ error: "Don't leave fields empty." });
+router.post(
+  "/api/posts",
+  multer({ storage: storage }).single("image"),
+  async (req, res) => {
+    const url = req.protocol + "://" + req.get("host");
+    const { title, content, imagePath } = req.body;
+    if (!title || !content) {
+      return res.status(422).json({ error: "Don't leave fields empty." });
+    }
+    try {
+      const post = new PostProvider({
+        title,
+        content,
+        imagePath: url + "/images/" + req.file.filename,
+      });
+
+      await post.save().then((createdPost) => {
+        res.status(201).json({
+          message: "Post added successfully.",
+          post: {
+            ...createdPost,
+            _id: createdPost._id,
+          },
+        });
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Server error!" });
+    }
   }
-  try {
-    const post = new PostProvider({
-      title,
-      content,
-    });
-    await post.save().then((createdPost) => {
-      res
-        .status(201)
-        .json({ message: "Post added successfully.", postId: createdPost._id });
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Server error!" });
-  }
-});
+);
 
 /**
  * @route GET /api/posts
