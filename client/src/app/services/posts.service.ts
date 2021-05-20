@@ -26,8 +26,8 @@ export class PostsService {
   addPost(post: Post, image: File) {
     const postData = new FormData();
     postData.append('title', post.title);
-    postData.append('content', post.content);
     postData.append('image', image, post.title);
+    postData.append('content', post.content);
     this.http
       .post<{ message: string; post: Post }>(
         this.baseUrl + '/api/posts',
@@ -42,8 +42,8 @@ export class PostsService {
         }
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
+        this.router.navigate(['/']);
       });
-    this.router.navigate(['/']);
   }
 
   // Get all Posts
@@ -67,21 +67,38 @@ export class PostsService {
   }
 
   // Update Post
-  updatePost(id: string, formValue) {
-    this.http.put(this.baseUrl + "/api/posts/" + id, formValue).subscribe((response) => {
-      const updatedPosts = [...this.posts];
-      const oldPostsIndex = updatedPosts.findIndex(p => p._id === id);
-      const post: Post = {
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postData: Post | FormData;
+    if (typeof image === 'object') {
+      postData = new FormData();
+      postData.append('_id', id);
+      postData.append('title', title);
+      postData.append('content', content);
+      postData.append('image', image, title);
+    } else {
+      postData = {
         _id: id,
-        title: formValue.title,
-        content: formValue.content,
-        imagePath: formValue.image
-      }
-      updatedPosts[oldPostsIndex] = post;
-      this.posts = updatedPosts;
-      this.postsUpdated.next([...this.posts]);
-      this.router.navigate(['/']);
-    })
+        title: title,
+        content: content,
+        imagePath: image,
+      };
+    }
+    this.http.put(this.baseUrl + "/api/posts/" + id, postData)
+      .subscribe((response) => {
+        const updatedPosts = [...this.posts];
+        const oldPostsIndex = updatedPosts.findIndex(p => p._id === id);
+        const post: Post = {
+          _id: id,
+          title: title,
+          content: content,
+          imagePath: "",
+        }
+
+        updatedPosts[oldPostsIndex] = post;
+        this.posts = updatedPosts;
+        this.postsUpdated.next([...this.posts]);
+        this.router.navigate(['/']);
+      })
   }
 
   // Delete Post

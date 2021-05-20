@@ -49,7 +49,6 @@ router.post(
         content,
         imagePath: url + "/images/" + req.file.filename,
       });
-
       await post.save().then((createdPost) => {
         res.status(201).json({
           message: "Post added successfully.",
@@ -120,14 +119,30 @@ router.delete("/api/posts/:id", async (req, res) => {
  * @access Public (For Now)
  */
 
-router.put("/api/posts/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    await PostProvider.findByIdAndUpdate(id, req.body);
-    res.status(200).json({ message: "Post Updated successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: "Server error!" });
+router.put(
+  "/api/posts/:id",
+  multer({ storage: storage }).single("image"),
+  async (req, res) => {
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+      const url = req.protocol + "://" + req.get("host");
+      imagePath = url + "/images/" + req.file.filename;
+    }
+    try {
+      const { id } = req.params;
+      const { title, content } = req.body;
+      const post = new PostProvider({
+        _id: id,
+        title,
+        content,
+        imagePath: imagePath,
+      });
+      await PostProvider.findByIdAndUpdate(id, post);
+      res.status(200).json({ message: "Post Updated successfully!" });
+    } catch (error) {
+      res.status(500).json({ error: "Server error!" });
+    }
   }
-});
+);
 
 module.exports = router;

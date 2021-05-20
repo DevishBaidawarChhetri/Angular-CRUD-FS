@@ -24,8 +24,16 @@ export class PostCreateComponent implements OnInit {
   ngOnInit(): void {
     // Form Group
     // this.form = new FormGroup({
-    //   title: new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
-    //   content: new FormControl(null, { validators: [Validators.required, Validators.minLength(5)] })
+    //   title: new FormControl(null, {
+    //     validators: [Validators.required, Validators.minLength(3)],
+    //   }),
+    //   image: new FormControl(null, {
+    //     validators: [Validators.required],
+    //     asyncValidators: [mimeType],
+    //   }),
+    //   content: new FormControl(null, {
+    //     validators: [Validators.required],
+    //   }),
     // });
 
     // Form Builder
@@ -41,7 +49,7 @@ export class PostCreateComponent implements OnInit {
     // Get route for posting or editing post
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
-        this.mode = 'editPost';
+        this.mode = 'edit';
         this.postId = paramMap.get('postId');
         this.postsSercice.getPost(this.postId).subscribe((postData) => {
           // console.log(postData);
@@ -53,8 +61,8 @@ export class PostCreateComponent implements OnInit {
           }
           this.form.setValue({
             title: this.post.title,
+            image: this.post.imagePath,
             content: this.post.content,
-            imagePath: this.post.imagePath
           });
         });
       } else {
@@ -69,7 +77,12 @@ export class PostCreateComponent implements OnInit {
     if (this.mode == 'create') {
       this.postsSercice.addPost(this.form.value, this.form.value.image);
     } else {
-      this.postsSercice.updatePost(this.post._id, this.form.value);
+      this.postsSercice.updatePost(
+        this.post._id,
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     }
     this.logKeyValuePairs(this.form);
     this.form.reset();
@@ -83,8 +96,8 @@ export class PostCreateComponent implements OnInit {
   }
 
   // On image selected
-  onImagePicked(event) {
-    this.imageName = event.target.files[0].name;
+  onImagePicked(event: Event) {
+    this.imageName = (event.target as HTMLInputElement).files[0].name;
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({ image: file });
     this.form.get('image').updateValueAndValidity();
