@@ -70,13 +70,33 @@ router.post(
  * @access Public (For Now)
  */
 
-router.get("/api/posts", async (req, res) => {
-  try {
-    const posts = await PostProvider.find({});
-    res.status(200).json({ message: "Fetched successfully!", posts: posts });
-  } catch (error) {
-    res.status(500).json({ error: "Server error!" });
+router.get("/api/posts", (req, res) => {
+  const currentPage = +req.query.page;
+  const pageSize = +req.query.pagesize;
+
+  const postQuery = PostProvider.find({});
+  let fetchedPosts;
+
+  if (currentPage && pageSize) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
+
+  postQuery
+    .then((docs) => {
+      fetchedPosts = docs;
+      return PostProvider.countDocuments();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Fetched successfully!",
+        posts: fetchedPosts,
+        maxPosts: count,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ error: "Server error!" });
+    });
 });
 
 /**

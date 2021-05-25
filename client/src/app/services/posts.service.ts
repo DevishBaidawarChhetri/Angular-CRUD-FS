@@ -5,17 +5,18 @@ import { Post } from '../models/post.model';
 // Similar to event emitter
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PostsService {
   private posts: Post[] = [];
-  private postsUpdated = new Subject();
+  private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  private baseUrl: string = 'http://localhost:3001';
+  private baseUrl: string = environment.apiUrl + '/posts/';
 
   // Listener for new post
   getPostUpdateListner() {
@@ -30,40 +31,48 @@ export class PostsService {
     postData.append('content', post.content);
     this.http
       .post<{ message: string; post: Post }>(
-        this.baseUrl + '/api/posts',
+        this.baseUrl,
         postData
       )
       .subscribe((response) => {
-        const post: Post = {
-          _id: response.post._id,
-          title: response.post.title,
-          content: response.post.content,
-          imagePath: response.post.imagePath
-        }
-        this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);
+        // We are redirecting to home route so below is commented
+
+        // const post: Post = {
+        //   _id: response.post._id,
+        //   title: response.post.title,
+        //   content: response.post.content,
+        //   imagePath: response.post.imagePath
+        // }
+        // this.posts.push(post);
+        // this.postsUpdated.next({posts:[...this.posts]});
         this.router.navigate(['/']);
       });
   }
 
   // Get all Posts
-  getPosts() {
+  getPosts(currentPage: number, postsPerPage: number) {
+    const queryParams = `?page=${currentPage}&pagesize=${postsPerPage}`;
     this.http
-      .get<{ message: string, posts: Post[] }>(this.baseUrl + '/api/posts')
+      .get<{ message: string; posts: Post[]; maxPosts: number }>(
+        this.baseUrl + queryParams
+      )
       .subscribe((data) => {
         this.posts = data.posts;
-        this.postsUpdated.next([...this.posts]);
+        this.postsUpdated.next({
+          posts: [...this.posts],
+          postCount: data.maxPosts,
+        });
       });
   }
 
   // Get individual post
   getPost(id: string) {
     return this.http.get<{
-      _id: string,
-      title: string,
-      content: string,
-      imagePath: string
-    }>(this.baseUrl + '/api/posts/' + id);
+      _id: string;
+      title: string;
+      content: string;
+      imagePath: string;
+    }>(this.baseUrl + id);
   }
 
   // Update Post
@@ -83,30 +92,29 @@ export class PostsService {
         imagePath: image,
       };
     }
-    this.http.put(this.baseUrl + "/api/posts/" + id, postData)
+    this.http
+      .put(this.baseUrl + id, postData)
       .subscribe((response) => {
-        const updatedPosts = [...this.posts];
-        const oldPostsIndex = updatedPosts.findIndex(p => p._id === id);
-        const post: Post = {
-          _id: id,
-          title: title,
-          content: content,
-          imagePath: "",
-        }
+        // We are redirecting to home route so below is commented
 
-        updatedPosts[oldPostsIndex] = post;
-        this.posts = updatedPosts;
-        this.postsUpdated.next([...this.posts]);
+        // const updatedPosts = [...this.posts];
+        // const oldPostsIndex = updatedPosts.findIndex(p => p._id === id);
+        // const post: Post = {
+        //   _id: id,
+        //   title: title,
+        //   content: content,
+        //   imagePath: "",
+        // }
+        // console.log(post);
+        // updatedPosts[oldPostsIndex] = post;
+        // this.posts = updatedPosts;
+        // this.postsUpdated.next({ [...this.posts], postCount: });
         this.router.navigate(['/']);
-      })
+      });
   }
 
   // Delete Post
   deletePost(postId: string) {
-    this.http.delete(this.baseUrl + '/api/posts/' + postId).subscribe(() => {
-      const updatedPosts = this.posts.filter((post) => post._id !== postId);
-      this.posts = updatedPosts;
-      this.postsUpdated.next([...this.posts]);
-    });
+    return this.http.delete(this.baseUrl + postId);
   }
 }
