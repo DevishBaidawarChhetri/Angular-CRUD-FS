@@ -8,6 +8,8 @@ const routes: Routes = [
   { path: "", component: Components.PostListComponent },
   { path: "create", component: Components.PostCreateComponent },
   { path: "edit/:postId", component: Components.PostCreateComponent },
+  { path: "login", component: Components.LoginComponent },
+  { path: "signup", component: Components.SignupComponent },
 ];
 
 @NgModule({

@@ -1,0 +1,45 @@
+<div class="split-screen">
+  <div class="left">
+    <div class="copy">
+      <h1>Full Stacks CRUD</h1>
+      <p>Practice from Udemy Course</p>
+    </div>
+  </div>
+  <div class="right">
+    <form>
+      <div class="copy">
+        <h2>Login</h2>
+      </div>
+      <div class="input-container email">
+        <mat-form-field>
+          <input
+            matInput
+            type="email"
+            name="email"
+            ngModel
+            placeholder="Email"
+            #emailInput="ngModel"
+            required
+            email
+          />
+          <mat-error>Please enter valid email.</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input
+            matInput
+            name="password"
+            ngModel
+            #passwordInput="ngModel"
+            type="password"
+            placeholder="Password"
+            required
+          />
+          <mat-error>Please enter valid password.</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="button-div">
+        <button mat-raised-button color="accent" type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+</div>

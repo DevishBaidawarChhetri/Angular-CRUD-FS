@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
@@ -20,7 +20,9 @@ import * as Components from './components/index';
     Components.AppComponent,
     Components.HeaderComponent,
     Components.PostCreateComponent,
-    Components.PostListComponent
+    Components.PostListComponent,
+    Components.LoginComponent,
+    Components.SignupComponent
   ],
   imports: [
     BrowserModule,
@@ -28,6 +30,7 @@ import * as Components from './components/index';
     BrowserAnimationsModule,
     MatToolbarModule,
     MatCardModule,
+    FormsModule,
     ReactiveFormsModule,
     MatInputModule,
     MatButtonModule,
