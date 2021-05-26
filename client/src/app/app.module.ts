@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { ToastrModule } from 'ngx-toastr';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -36,7 +37,14 @@ import * as Components from './components/index';
     MatButtonModule,
     HttpClientModule,
     MatExpansionModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    ToastrModule.forRoot({
+      timeOut: 1500,
+      progressBar: true,
+      progressAnimation: 'decreasing',
+      preventDuplicates: true,
+      closeButton: true
+    })
   ],
   providers: [],
   bootstrap: [Components.AppComponent]

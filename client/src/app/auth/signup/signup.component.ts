@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -7,9 +10,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SignupComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  onSignup(form: NgForm) {
+    if (form.invalid) { return; }
+    this.authService.createUser(
+      form.value.fullName,
+      form.value.email,
+      form.value.password
+    );
+    this.toastr.success('Signup Successful.', 'Success');
   }
 
 }

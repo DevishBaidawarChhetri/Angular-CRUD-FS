@@ -1,7 +1,7 @@
 <div class="split-screen">
   <div class="left">
     <div class="form-container">
-      <form>
+      <form (ngSubmit)="onSignup(signupForm)" #signupForm="ngForm">
         <div class="copy">
           <h2>Signup</h2>
         </div>
