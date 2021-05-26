@@ -42,7 +42,7 @@ router.post(
   multer({ storage: storage }).single("image"),
   async (req, res) => {
     const url = req.protocol + "://" + req.get("host");
-    const { title, content, imagePath } = req.body;
+    const { title, content } = req.body;
     if (!title || !content) {
       return res.status(422).json({ message: "Don't leave fields empty." });
     }
