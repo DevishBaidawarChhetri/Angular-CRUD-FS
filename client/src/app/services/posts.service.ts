@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Post } from '../models/post.model';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 // Similar to event emitter
 import { Subject } from 'rxjs';
-import { Router } from '@angular/router';
+
+// Environment Variable
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -14,7 +17,11 @@ export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toastr: ToastrService
+  ) { }
 
   private baseUrl: string = environment.apiUrl + '/posts/';
 
@@ -30,23 +37,26 @@ export class PostsService {
     postData.append('image', image, post.title);
     postData.append('content', post.content);
     this.http
-      .post<{ message: string; post: Post }>(
-        this.baseUrl,
-        postData
-      )
-      .subscribe((response) => {
-        // We are redirecting to home route so below is commented
+      .post<{ message: string; post: Post }>(this.baseUrl, postData)
+      .subscribe(
+        (response: any) => {
+          // We are redirecting to home route so below is commented
 
-        // const post: Post = {
-        //   _id: response.post._id,
-        //   title: response.post.title,
-        //   content: response.post.content,
-        //   imagePath: response.post.imagePath
-        // }
-        // this.posts.push(post);
-        // this.postsUpdated.next({posts:[...this.posts]});
-        this.router.navigate(['/']);
-      });
+          // const post: Post = {
+          //   _id: response.post._id,
+          //   title: response.post.title,
+          //   content: response.post.content,
+          //   imagePath: response.post.imagePath
+          // }
+          // this.posts.push(post);
+          // this.postsUpdated.next({posts:[...this.posts]});
+          this.toastr.success(response.message, 'Success');
+          this.router.navigate(['/']);
+        },
+        (error) => {
+          this.toastr.error(error.error.message, 'Error');
+        }
+      );
   }
 
   // Get all Posts
@@ -56,13 +66,19 @@ export class PostsService {
       .get<{ message: string; posts: Post[]; maxPosts: number }>(
         this.baseUrl + queryParams
       )
-      .subscribe((data) => {
-        this.posts = data.posts;
-        this.postsUpdated.next({
-          posts: [...this.posts],
-          postCount: data.maxPosts,
-        });
-      });
+      .subscribe(
+        (data) => {
+          this.posts = data.posts;
+          this.postsUpdated.next({
+            posts: [...this.posts],
+            postCount: data.maxPosts,
+          });
+          this.toastr.success(data.message, 'Success');
+        },
+        (error) => {
+          this.toastr.error(error.error.message, 'Success');
+        }
+      );
   }
 
   // Get individual post
@@ -92,9 +108,8 @@ export class PostsService {
         imagePath: image,
       };
     }
-    this.http
-      .put(this.baseUrl + id, postData)
-      .subscribe((response) => {
+    this.http.put(this.baseUrl + id, postData).subscribe(
+      (response: any) => {
         // We are redirecting to home route so below is commented
 
         // const updatedPosts = [...this.posts];
@@ -109,8 +124,13 @@ export class PostsService {
         // updatedPosts[oldPostsIndex] = post;
         // this.posts = updatedPosts;
         // this.postsUpdated.next({ [...this.posts], postCount: });
+        this.toastr.success(response.message, 'Success');
         this.router.navigate(['/']);
-      });
+      },
+      (error) => {
+        this.toastr.error(error.error.message, 'Error');
+      }
+    );
   }
 
   // Delete Post

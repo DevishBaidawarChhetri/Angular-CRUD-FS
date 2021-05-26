@@ -6,7 +6,7 @@
     </div>
   </div>
   <div class="right">
-    <form>
+    <form (ngSubmit)="onLogin(loginForm)" #loginForm="ngForm">
       <div class="copy">
         <h2>Login</h2>
       </div>

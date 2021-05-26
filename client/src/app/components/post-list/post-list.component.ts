@@ -3,6 +3,7 @@ import { Post } from '../../models/post.model';
 import { PostsService } from '../../services/posts.service';
 import { Subscription } from 'rxjs';
 import { PageEvent } from '@angular/material/paginator';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-post-list',
@@ -19,7 +20,10 @@ export class PostListComponent implements OnInit, OnDestroy {
   totalPosts = 0;
   pageSizeOptions = [2, 5, 10, 25];
 
-  constructor(private postsServices: PostsService) {}
+  constructor(
+    private postsServices: PostsService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.postsServices.getPosts(this.currentPage, this.postsPerPage);
@@ -33,9 +37,15 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   // Delete Post
   onDelete(postId) {
-    this.postsServices.deletePost(postId).subscribe(() => {
-      this.postsServices.getPosts(this.currentPage, this.postsPerPage);
-    });
+    this.postsServices.deletePost(postId).subscribe(
+      (response: any) => {
+        this.toastr.success(response.message, 'Success');
+        this.postsServices.getPosts(this.currentPage, this.postsPerPage);
+      },
+      (error) => {
+        this.toastr.error(error.error.message, 'Error');
+      }
+    );
   }
 
   // On Page change
