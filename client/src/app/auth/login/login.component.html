@@ -6,11 +6,12 @@
     </div>
   </div>
   <div class="right">
-    <form (ngSubmit)="onLogin(loginForm)" #loginForm="ngForm">
-      <div class="copy">
-        <h2>Login</h2>
-      </div>
-      <div class="input-container email">
+    <div class="form-container">
+      <form (ngSubmit)="onLogin(loginForm)" #loginForm="ngForm">
+        <div class="copy">
+          <h2>Login</h2>
+        </div>
+
         <mat-form-field>
           <input
             matInput
@@ -36,10 +37,11 @@
           />
           <mat-error>Please enter valid password.</mat-error>
         </mat-form-field>
-      </div>
-      <div class="button-div">
-        <button mat-raised-button color="accent" type="submit">Login</button>
-      </div>
-    </form>
+
+        <div class="button-div">
+          <button mat-raised-button color="accent" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

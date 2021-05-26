@@ -6,6 +6,7 @@
 
 mat-form-field {
   width: 100%;
+  margin-top: 1.5rem;
 }
 
 h1 {
@@ -45,6 +46,7 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 42vh;
 }
 
 .left {
@@ -76,10 +78,14 @@ a:hover {
   text-align: right;
 }
 
+.form-container {
+  margin: 0 3rem;
+}
+
 @media screen and (min-width: 900px) {
   .split-screen {
     flex-direction: row;
-    height: 93vh;
+    height: 84vh;
   }
   .left,
   .right {

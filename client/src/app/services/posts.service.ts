@@ -76,7 +76,7 @@ export class PostsService {
           this.toastr.success(data.message, 'Success');
         },
         (error) => {
-          this.toastr.error(error.error.message, 'Success');
+          this.toastr.error(error.error.message, 'Error');
         }
       );
   }

@@ -21,7 +21,8 @@ import { AuthInterceptor } from './interceptors/auth-interceptor';
     Components.PostCreateComponent,
     Components.PostListComponent,
     Components.LoginComponent,
-    Components.SignupComponent
+    Components.SignupComponent,
+    Components.FooterComponent
   ],
   imports: [
     BrowserModule,

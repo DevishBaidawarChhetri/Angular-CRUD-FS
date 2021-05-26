@@ -46,6 +46,7 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 42vh;
 }
 
 .right {
@@ -84,7 +85,7 @@ a:hover {
 @media screen and (min-width: 900px) {
   .split-screen {
     flex-direction: row;
-    height: 93vh;
+    height: 84vh;
   }
   .right,
   .left {

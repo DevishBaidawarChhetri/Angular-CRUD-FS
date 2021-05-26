@@ -3,8 +3,9 @@
   margin-top: 1rem;
 }
 main {
-  width: 80%;
+  width: 70%;
   margin: 1rem auto;
+  min-height: 81vh;
 }
 .info-text {
   text-align: center;
@@ -13,4 +14,9 @@ main {
 .post-image,
 .post-image img {
   width: 100%;
+}
+
+mat-accordion p {
+  margin-top: 1rem;
+  font-size: 1.2rem;
 }

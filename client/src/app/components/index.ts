@@ -5,3 +5,4 @@ export * from './post-create/post-create.component';
 export * from './post-list/post-list.component';
 export * from '../auth/login/login.component';
 export * from '../auth/signup/signup.component';
+export * from './footer/footer.component';
