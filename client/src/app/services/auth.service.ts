@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthData } from '../models/auth-data.model';
+import { ToastrService } from 'ngx-toastr'
 
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
+    private toastr: ToastrService
   ) { }
 
   createUser(fullName: string, email: string, password: string) {
@@ -22,8 +24,11 @@ export class AuthService {
       email: email,
       password: password
     }
-    return this.http.post(this.baseUrl + "/signup", authData).subscribe(() => {
+    return this.http.post(this.baseUrl + "/signup", authData).subscribe((response: any) => {
+      this.toastr.success(response.message, 'Success');
       this.router.navigate(['/']);
+    }, (error) => {
+      this.toastr.error(error.error.message, 'Error');
     })
   }
 }

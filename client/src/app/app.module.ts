@@ -39,7 +39,7 @@ import * as Components from './components/index';
     MatExpansionModule,
     MatPaginatorModule,
     ToastrModule.forRoot({
-      timeOut: 1500,
+      timeOut: 2000,
       progressBar: true,
       progressAnimation: 'decreasing',
       preventDuplicates: true,

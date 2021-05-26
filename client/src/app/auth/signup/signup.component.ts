@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -11,8 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 export class SignupComponent implements OnInit {
 
   constructor(
-    private authService: AuthService,
-    private toastr: ToastrService
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -25,7 +23,6 @@ export class SignupComponent implements OnInit {
       form.value.email,
       form.value.password
     );
-    this.toastr.success('Signup Successful.', 'Success');
   }
 
 }
