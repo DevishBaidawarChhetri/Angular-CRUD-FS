@@ -13,7 +13,7 @@
         <img [src]="post.imagePath" [alt]="post.title" />
       </div>
       <p>{{ post.content }}</p>
-      <mat-action-row>
+      <mat-action-row *ngIf="userIsAuthenticated">
         <a [routerLink]="['/edit', post._id]" mat-raised-button color="primary">
           EDIT
         </a>
