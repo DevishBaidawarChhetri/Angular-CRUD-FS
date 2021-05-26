@@ -7,7 +7,6 @@ import { ToastrService } from 'ngx-toastr';
 import { LoginData } from '../models/login.model';
 import { Subject } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -15,7 +14,8 @@ export class AuthService {
   private baseUrl: string = environment.apiUrl + '/user';
   private token: string;
   private authStatusListener = new Subject<boolean>();
-  private isAuthenticated = false;
+  private isAuthenticated: boolean = false;
+  private userId: string;
 
   constructor(
     private http: HttpClient,
@@ -33,9 +33,14 @@ export class AuthService {
     return this.authStatusListener.asObservable();
   }
 
-  //
+  // Is user auth or not
   getIsAuth() {
     return this.isAuthenticated;
+  }
+
+  // User Id
+  getUserId() {
+    return this.userId;
   }
 
   // Signup
@@ -69,17 +74,30 @@ export class AuthService {
         expiresIn: number;
         userId: string;
       }>(this.baseUrl + '/login', loginData)
-      .subscribe((response) => {
-        const token = response.token;
-        this.token = token;
-        this.toastr.success(response.message, 'Success');
-        if (token) {
-          this.isAuthenticated = true;
-          this.authStatusListener.next(true);
+      .subscribe(
+        (response) => {
+          const token = response.token;
+          this.token = token;
+          this.toastr.success(response.message, 'Success');
+          if (token) {
+            this.userId = response.userId;
+            this.isAuthenticated = true;
+            this.authStatusListener.next(true);
+          }
+          this.router.navigate(['/']);
+        },
+        (error) => {
+          this.toastr.error(error.error.message, 'Error');
         }
-        this.router.navigate(['/']);
-      }, (error) => {
-        this.toastr.error(error.error.message, 'Error');
-      });
+      );
+  }
+
+  // Logout
+  logoutUser() {
+    this.token = null;
+    this.isAuthenticated = false;
+    this.authStatusListener.next(false);
+    this.router.navigate(['/login']);
+    this.toastr.success('Logout successful', 'Success');
   }
 }

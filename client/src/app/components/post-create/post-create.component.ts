@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Post } from 'src/app/models/post.model';
+import { Post } from '../../models/post.model';
 import { PostsService } from '../../services/posts.service';
 import { mimeType } from './mime-type.validator';
-
 
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
-  styleUrls: ['./post-create.component.css']
+  styleUrls: ['./post-create.component.css'],
 })
 export class PostCreateComponent implements OnInit {
   form: FormGroup;
@@ -19,7 +23,11 @@ export class PostCreateComponent implements OnInit {
   imageName: string = '';
   imagePreview: string;
 
-  constructor(private postsSercice: PostsService, public route: ActivatedRoute, private fb: FormBuilder,) { }
+  constructor(
+    private postsSercice: PostsService,
+    public route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit(): void {
     // Form Group
@@ -42,9 +50,9 @@ export class PostCreateComponent implements OnInit {
       content: ['', [Validators.required, Validators.minLength(5)]],
       image: new FormControl(null, {
         validators: [Validators.required],
-        asyncValidators: [mimeType]
-      })
-    })
+        asyncValidators: [mimeType],
+      }),
+    });
 
     // Get route for posting or editing post
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -57,8 +65,9 @@ export class PostCreateComponent implements OnInit {
             _id: postData._id,
             title: postData.title,
             content: postData.content,
-            imagePath: postData.imagePath
-          }
+            imagePath: postData.imagePath,
+            creator: postData.creator
+          };
           this.form.setValue({
             title: this.post.title,
             image: this.post.imagePath,
@@ -69,11 +78,13 @@ export class PostCreateComponent implements OnInit {
         this.mode = 'create';
         this.postId = null;
       }
-    })
+    });
   }
 
   onAddPost() {
-    if (this.form.invalid) { return }
+    if (this.form.invalid) {
+      return;
+    }
     if (this.mode == 'create') {
       this.postsSercice.addPost(this.form.value, this.form.value.image);
     } else {
@@ -92,7 +103,7 @@ export class PostCreateComponent implements OnInit {
   logKeyValuePairs(group: FormGroup) {
     Object.keys(group.controls).forEach((key: string) => {
       group.get(key).clearValidators();
-    })
+    });
   }
 
   // On image selected
@@ -108,6 +119,3 @@ export class PostCreateComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 }
-
-
-

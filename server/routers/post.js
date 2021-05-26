@@ -44,13 +44,14 @@ router.post(
     const url = req.protocol + "://" + req.get("host");
     const { title, content, imagePath } = req.body;
     if (!title || !content) {
-      return res.status(422).json({ error: "Don't leave fields empty." });
+      return res.status(422).json({ message: "Don't leave fields empty." });
     }
     try {
       const post = new PostProvider({
         title,
         content,
         imagePath: url + "/images/" + req.file.filename,
+        creator: req.userData.userId,
       });
       await post.save().then((createdPost) => {
         res.status(201).json({
@@ -62,7 +63,7 @@ router.post(
         });
       });
     } catch (error) {
-      res.status(500).json({ error: "Server error!" });
+      res.status(500).json({ message: "Server error!" });
     }
   }
 );
@@ -115,7 +116,7 @@ router.get("/:id", async (req, res) => {
       res.status(404).json({ message: "Post not found!" });
     }
   } catch (error) {
-    res.status(500).json({ error: "Server error!" });
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -127,10 +128,17 @@ router.get("/:id", async (req, res) => {
 
 router.delete("/:id", checkAuth, async (req, res) => {
   try {
-    await PostProvider.deleteOne({ _id: req.params.id });
-    res.status(200).json({ message: "Post deleted successfully!" });
+    const result = await PostProvider.deleteOne({
+      _id: req.params.id,
+      creator: req.userData.userId,
+    });
+    if (result.n > 0) {
+      res.status(200).json({ message: "Post deleted successfully!" });
+    } else {
+      res.status(401).json({ message: "Not authorized!" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Server error!" });
+    res.status(500).json({ message: "Server error!" });
   }
 });
 
@@ -158,11 +166,19 @@ router.put(
         title,
         content,
         imagePath: imagePath,
+        creator: req.userData.userId,
       });
-      await PostProvider.findByIdAndUpdate(id, post);
-      res.status(200).json({ message: "Post Updated successfully!" });
+      const result = await PostProvider.updateOne(
+        { _id: id, creator: req.userData.userId },
+        post
+      );
+      if (result.n > 0) {
+        res.status(200).json({ message: "Post Updated successfully!" });
+      } else {
+        res.status(401).json({ message: "Not authorized!" });
+      }
     } catch (error) {
-      res.status(500).json({ error: "Server error!" });
+      res.status(500).json({ message: "Server error!" });
     }
   }
 );

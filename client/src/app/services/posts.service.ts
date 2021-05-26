@@ -88,6 +88,7 @@ export class PostsService {
       title: string;
       content: string;
       imagePath: string;
+      creator: string;
     }>(this.baseUrl + id);
   }
 
@@ -106,6 +107,7 @@ export class PostsService {
         title: title,
         content: content,
         imagePath: image,
+        creator: null
       };
     }
     this.http.put(this.baseUrl + id, postData).subscribe(
