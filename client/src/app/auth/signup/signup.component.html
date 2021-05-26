@@ -1,11 +1,26 @@
 <div class="split-screen">
   <div class="left">
-    <form>
-      <div class="copy">
-        <h2>Signup</h2>
-      </div>
-      <div class="input-container email">
+    <div class="form-container">
+      <form>
+        <div class="copy">
+          <h2>Signup</h2>
+        </div>
         <mat-form-field>
+          <mat-label>Full Name</mat-label>
+          <input
+            matInput
+            type="text"
+            name="fullName"
+            ngModel
+            placeholder="Full Name"
+            #fullNameInput="ngModel"
+            required
+          />
+          <mat-error>Please enter valid full name.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Email</mat-label>
           <input
             matInput
             type="email"
@@ -19,6 +34,7 @@
           <mat-error>Please enter valid email.</mat-error>
         </mat-form-field>
         <mat-form-field>
+          <mat-label>Password</mat-label>
           <input
             matInput
             name="password"
@@ -30,11 +46,11 @@
           />
           <mat-error>Please enter valid password.</mat-error>
         </mat-form-field>
-      </div>
-      <div class="button-div">
-        <button mat-raised-button color="accent" type="submit">Signup</button>
-      </div>
-    </form>
+        <div class="button-div">
+          <button mat-raised-button color="accent" type="submit">Signup</button>
+        </div>
+      </form>
+    </div>
   </div>
   <div class="right">
     <div class="copy">

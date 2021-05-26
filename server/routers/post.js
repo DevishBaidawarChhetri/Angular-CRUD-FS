@@ -35,7 +35,7 @@ const storage = multer.diskStorage({
  */
 
 router.post(
-  "/api/posts",
+  "/",
   multer({ storage: storage }).single("image"),
   async (req, res) => {
     const url = req.protocol + "://" + req.get("host");
@@ -70,33 +70,31 @@ router.post(
  * @access Public (For Now)
  */
 
-router.get("/api/posts", (req, res) => {
-  const currentPage = +req.query.page;
-  const pageSize = +req.query.pagesize;
+router.get("/", async (req, res) => {
+  try {
+    const currentPage = +req.query.page;
+    const pageSize = +req.query.pagesize;
 
-  const postQuery = PostProvider.find({});
-  let fetchedPosts;
-
-  if (currentPage && pageSize) {
-    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
-  }
-
-  postQuery
-    .then((docs) => {
-      fetchedPosts = docs;
-      return PostProvider.countDocuments();
-    })
-    .then((count) => {
+    if (currentPage && pageSize) {
+      const fetchedPosts = await PostProvider.find()
+        .skip(pageSize * (currentPage - 1))
+        .limit(pageSize);
+      const count = await PostProvider.countDocuments();
       res.status(200).json({
-        message: "Fetched successfully!",
+        message: "Fetched Successfully!",
         posts: fetchedPosts,
         maxPosts: count,
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ error: "Server error!" });
+    } else {
+      res.status(422).json({
+        message: "Page query and Page size query expected!",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Server Error!",
     });
+  }
 });
 
 /**
@@ -104,7 +102,7 @@ router.get("/api/posts", (req, res) => {
  * @desc Get individual post
  * @access Public (For now)
  */
-router.get("/api/posts/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const post = await PostProvider.findById(id);
@@ -124,7 +122,7 @@ router.get("/api/posts/:id", async (req, res) => {
  * @access Public (For Now)
  */
 
-router.delete("/api/posts/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     await PostProvider.deleteOne({ _id: req.params.id });
     res.status(200).json({ message: "Post deleted successfully!" });
@@ -140,7 +138,7 @@ router.delete("/api/posts/:id", async (req, res) => {
  */
 
 router.put(
-  "/api/posts/:id",
+  "/:id",
   multer({ storage: storage }).single("image"),
   async (req, res) => {
     let imagePath = req.body.imagePath;

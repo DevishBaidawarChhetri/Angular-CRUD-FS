@@ -6,6 +6,7 @@
 
 mat-form-field {
   width: 100%;
+  margin-top: 1rem;
 }
 
 h1 {
@@ -74,6 +75,10 @@ a:hover {
 
 .button-div {
   text-align: right;
+}
+
+.form-container {
+  margin: 0 3rem;
 }
 
 @media screen and (min-width: 900px) {
